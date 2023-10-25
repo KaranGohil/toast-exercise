@@ -1,20 +1,25 @@
 import React, { useState, useEffect } from 'react';
 
+// (TODO) merger 
 import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
 import Snackbar from '@mui/material/Snackbar';
 
-import { onMessage } from '../service/mockServer';
+import { onMessage, saveLikedFormSubmission } from '../service/mockServer';
 import { Slide, Typography } from '@mui/material';
-
+/*
+ We have local state with useeffect here because we want only the toast to rerender
+ when the new message arrives
+ */
 const Toast = () => {
 	const [open, setOpen] = useState(false);
+	const [loading, setLoading] = useState(false);
 	const [formData, setFormData] = useState({});
 
 	const receiveFormData = (formSubmission) => {
-		//const { email, firstName, lastName } = formSubmission.data;
-		setFormData(formSubmission.data);
+		setFormData(formSubmission);
 		setOpen(true);
 	};
 
@@ -32,39 +37,53 @@ const Toast = () => {
 		setOpen(false);
 	};
 
-	const handleLike = () => {
-		console.log('I was liked');
+	const handleLike = async () => {
+		setLoading(true);
+		try {
+			await saveLikedFormSubmission(formData);
+			setLoading(false);
+		} catch (error) {
+			console.log('maybe work with error to show in toast');
+			setLoading(false);
+		}
+        setOpen(false)
 	};
 
 	const action = (
 		<>
-			<Button color="secondary" size="small" onClick={handleLike}>
-				LIKE
-			</Button>
-			<IconButton
-				size="small"
-				aria-label="close"
-				color="inherit"
-				onClick={handleClose}
-			>
-				<CloseIcon fontSize="small" />
-			</IconButton>
+			{loading ? (
+				<CircularProgress />
+			) : (
+				<>
+					<Button color="primary" size="small" onClick={handleLike}>
+						LIKE
+					</Button>
+					<IconButton
+						size="small"
+						aria-label="close"
+						color="inherit"
+						onClick={handleClose}
+					>
+						<CloseIcon fontSize="small" />
+					</IconButton>
+				</>
+			)}
 		</>
 	);
 
-    const message = () => {
-        if(!formData) return 'No data received'
+	const message = () => {
+		if (!formData.data) return 'No data received';
 
-        const {firstName, lastName, email} = formData
+		const { firstName, lastName, email } = formData.data;
 
-        return (
-            <Typography>
-                {firstName} {lastName}
-                <br/>
-                Email: {email}
-            </Typography>
-        )
-    }
+		return (
+			<Typography>
+				{firstName} {lastName}
+				<br />
+				Email: {email}
+			</Typography>
+		);
+	};
 
 	return (
 		<Snackbar
@@ -76,7 +95,7 @@ const Toast = () => {
 			onClose={handleClose}
 			message={message()}
 			action={action}
-		/>
+		/> 
 	);
 };
 
