@@ -3,6 +3,7 @@ import Container from '@mui/material/Container';
 
 import Header from './Header';
 import Content from './Content';
+import Toast from './components/Toast';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <Container>
         <Content />
       </Container>
+      <Toast/>
     </>
   );
 }
