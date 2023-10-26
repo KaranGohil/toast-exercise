@@ -57,7 +57,13 @@ export default function Content() {
 				</Box>
 				{loading ? (
 					<Box
-						sx={{ display: 'flex', paddingTop: 3, justifyContent: 'center' }}
+						sx={{
+							marginTop: '35%',
+							marginLeft: '50%',
+							paddingTop: 3,
+							width: '100%',
+							height: '100vh',
+						}}
 					>
 						<CircularProgress />
 					</Box>
