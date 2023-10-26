@@ -7,11 +7,12 @@ import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
 import Snackbar from '@mui/material/Snackbar';
 
-import { onMessage, saveLikedFormSubmission } from '../service/mockServer';
+import { onMessage, saveLikedFormSubmission } from './service/mockServer';
 import { Slide, Typography } from '@mui/material';
 /*
  We have local state with useeffect here because we want only the toast to rerender
  when the new message arrives
+ This toast has a single responsibility of show new submission
  */
 const Toast = () => {
 	const [open, setOpen] = useState(false);
@@ -43,7 +44,7 @@ const Toast = () => {
 			await saveLikedFormSubmission(formData);
 			setLoading(false);
 		} catch (error) {
-			console.log('maybe work with error to show in toast');
+			window.alert('Failed to save the data');
 			setLoading(false);
 		}
         setOpen(false)
