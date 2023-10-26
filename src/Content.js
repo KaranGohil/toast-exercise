@@ -5,15 +5,30 @@ import {
 	Button,
 	CircularProgress,
 	Typography,
+	Snackbar,
 } from '@mui/material';
+import MuiAlert from '@mui/material/Alert';
 import ReplayIcon from '@mui/icons-material/Replay';
 
 import { fetchLikedFormSubmissions } from './service/mockServer';
 import { ItemCard } from './components/ItemCard/ItemCard';
 
+const Alert = React.forwardRef(function Alert(props, ref) {
+	return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 export default function Content() {
 	const [loading, setLoading] = useState(false);
 	const [likedForms, setLikedForms] = useState([]);
+	const [open, setOpen] = useState(false);
+
+	const handleClose = (_event, reason) => {
+		if (reason === 'clickaway') {
+			return;
+		}
+
+		setOpen(false);
+	};
 
 	const getFormData = async () => {
 		setLoading(true);
@@ -22,7 +37,7 @@ export default function Content() {
 			setLikedForms(likedFormSubmissions.formSubmissions);
 			setLoading(false);
 		} catch (error) {
-			window.alert('Error fetching the liked form:', error)
+			setOpen(true);
 			setLoading(false);
 		}
 	};
@@ -36,7 +51,11 @@ export default function Content() {
 			<Box sx={{ marginTop: 3, marginX: 3 }}>
 				<Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
 					<Typography variant="h4">Liked Form Submissions</Typography>
-					<Button variant='contained' startIcon={<ReplayIcon />} onClick={() => getFormData()}>
+					<Button
+						variant="contained"
+						startIcon={<ReplayIcon />}
+						onClick={() => getFormData()}
+					>
 						Refresh
 					</Button>
 				</Box>
@@ -63,6 +82,16 @@ export default function Content() {
 					</Stack>
 				)}
 			</Box>
+			<Snackbar
+				anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+				open={open}
+				onClose={handleClose}
+				autoHideDuration={3000}
+			>
+				<Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+					Failed to reterive liked form submissions
+				</Alert>
+			</Snackbar>
 		</>
 	);
 }

@@ -4,12 +4,12 @@
 	justify-content: center;
 	width: 100%;
 	background-color: #1976d2;
-	height: 5vw;
+	min-height: 5vw;
 	border-radius: 16px;
 	padding: 8px;
 	color: white;
 }
 
-p {
+p, h3 {
 	margin: 0;
 }

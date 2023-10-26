@@ -8,6 +8,7 @@ import {
 	IconButton,
 	Snackbar,
 } from '@mui/material';
+import MuiAlert from '@mui/material/Alert';
 
 import { onMessage, saveLikedFormSubmission } from './service/mockServer';
 
@@ -16,16 +17,23 @@ import { onMessage, saveLikedFormSubmission } from './service/mockServer';
  when the new message arrives
  This toast has a single responsibility of show new submission
  */
+
+ const Alert = React.forwardRef(function Alert(props, ref) {
+	return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 const Toast = () => {
-	const [open, setOpen] = useState(false); 
+	const [open, setOpen] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [formData, setFormData] = useState({});
+	const [msgType, setMsgType] = useState('');
 
 	const isMounted = useRef(true);
 
 	const receiveFormData = (formSubmission) => {
 		if (isMounted.current) {
 			setFormData(formSubmission);
+			setMsgType('info');
 			setOpen(true);
 		}
 	};
@@ -50,12 +58,12 @@ const Toast = () => {
 		setLoading(true);
 		try {
 			await saveLikedFormSubmission(formData);
+			setMsgType('success');
 			setLoading(false);
 		} catch (error) {
-			window.alert('Failed to save the liked form:', error)
+			setMsgType('error');
 			setLoading(false);
 		}
-		setOpen(false);
 	};
 
 	const action = (
@@ -64,9 +72,11 @@ const Toast = () => {
 				<CircularProgress />
 			) : (
 				<>
-					<Button color="primary" size="small" onClick={handleLike}>
-						LIKE
-					</Button>
+					{msgType === 'info' && (
+						<Button color="primary" size="small" onClick={handleLike}>
+							LIKE
+						</Button>
+					)}
 					<IconButton
 						size="small"
 						aria-label="close"
@@ -81,19 +91,42 @@ const Toast = () => {
 	);
 
 	const message = () => {
+		if (!msgType) return 'No type was passed';
 		if (!formData.data) return 'No data received';
 
-		const { firstName, lastName, email } = formData.data;
-
-		return (
-			<Typography>
-				{firstName} {lastName}
-				<br />
-				Email: {email}
-			</Typography>
-		);
+		switch (msgType) {
+			case 'info':
+				const { firstName, lastName, email } = formData.data;
+				return (
+					<Typography>
+						{firstName} {lastName}
+						<br />
+						Email: {email}
+					</Typography>
+				);
+			case 'success':
+				return <Typography>Liked form was saved!</Typography>;
+			case 'error':
+				return <Typography>Failed to save liked form!</Typography>;
+			default:
+				return 'Invalid message type';
+		}
 	};
 
+	if (msgType !== 'info') {
+		return (
+			<Snackbar
+				anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+				open={open}
+				onClose={handleClose}
+				autoHideDuration={3000}
+			>
+				<Alert onClose={handleClose} severity={msgType} sx={{ width: '100%' }}>
+					{message()}
+				</Alert>
+			</Snackbar>
+		)
+	}
 	return (
 		<Snackbar
 			anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
@@ -104,6 +137,7 @@ const Toast = () => {
 			onClose={handleClose}
 			message={message()}
 			action={action}
+			autoHideDuration={msgType !== 'info' ? 3000 : null}
 		/>
 	);
 };

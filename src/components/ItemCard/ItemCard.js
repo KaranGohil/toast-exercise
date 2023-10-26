@@ -7,9 +7,9 @@ export const ItemCard = (props) => {
 
 	return (
 		<div className="item-card-container">
-			<p>
+			<h3>
 				{firstName} {lastName}
-			</p>
+			</h3>
 			<p>{email}</p>
 		</div>
 	);
