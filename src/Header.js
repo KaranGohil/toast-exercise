@@ -11,31 +11,31 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { createMockFormSubmission } from './service/mockServer';
 
 export default function Header() {
-  return (
-    <Box sx={{flexGrow: 1}}>
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{marginRight: 2}}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" sx={{flexGrow: 1}}>
-            Toast Exercise
-          </Typography>
-          <Button
-            variant="contained"
-            size="small"
-            color="secondary"
-            onClick={() => createMockFormSubmission()}
-          >
-            New Submission
-          </Button>
-        </Toolbar>
-      </AppBar>
-    </Box>
-  );
+	return (
+		<Box sx={{ flexGrow: 1 }}>
+			<AppBar position="static">
+				<Toolbar>
+					<IconButton
+						edge="start"
+						color="inherit"
+						aria-label="menu"
+						sx={{ marginRight: 2 }}
+					>
+						<MenuIcon />
+					</IconButton>
+					<Typography variant="h6" sx={{ flexGrow: 1 }}>
+						Toast Exercise
+					</Typography>
+					<Button
+						variant="contained"
+						size="small"
+						color="secondary"
+						onClick={() => createMockFormSubmission()}
+					>
+						New Submission
+					</Button>
+				</Toolbar>
+			</AppBar>
+		</Box>
+	);
 }

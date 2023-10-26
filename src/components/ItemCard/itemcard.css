@@ -1,0 +1,15 @@
+.item-card-container {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	width: 100%;
+	background-color: #1976d2;
+	height: 5vw;
+	border-radius: 16px;
+	padding: 8px;
+	color: white;
+}
+
+p {
+	margin: 0;
+}

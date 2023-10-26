@@ -6,15 +6,15 @@ import Content from './Content';
 import Toast from './Toast';
 
 function App() {
-  return (
-    <>
-      <Header />
-      <Container>
-        <Content />
-      </Container>
-      <Toast/>
-    </>
-  );
+	return (
+		<>
+			<Header />
+			<Container>
+				<Content />
+			</Container>
+			<Toast />
+		</>
+	);
 }
 
 export default App;

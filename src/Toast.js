@@ -1,33 +1,41 @@
-import React, { useState, useEffect } from 'react';
-
-// (TODO) merger 
-import Button from '@mui/material/Button';
-import CircularProgress from '@mui/material/CircularProgress';
+import React, { useState, useEffect, useRef } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
-import IconButton from '@mui/material/IconButton';
-import Snackbar from '@mui/material/Snackbar';
+import {
+	Slide,
+	Typography,
+	Button,
+	CircularProgress,
+	IconButton,
+	Snackbar,
+} from '@mui/material';
 
 import { onMessage, saveLikedFormSubmission } from './service/mockServer';
-import { Slide, Typography } from '@mui/material';
+
 /*
  We have local state with useeffect here because we want only the toast to rerender
  when the new message arrives
  This toast has a single responsibility of show new submission
  */
 const Toast = () => {
-	const [open, setOpen] = useState(false);
+	const [open, setOpen] = useState(false); 
 	const [loading, setLoading] = useState(false);
 	const [formData, setFormData] = useState({});
 
+	const isMounted = useRef(true);
+
 	const receiveFormData = (formSubmission) => {
-		setFormData(formSubmission);
-		setOpen(true);
+		if (isMounted.current) {
+			setFormData(formSubmission);
+			setOpen(true);
+		}
 	};
 
 	useEffect(() => {
-		// When the component mounts, onMessage is set up
-		// As this is not a event listener, no clean up function required
 		onMessage(receiveFormData);
+
+		return () => {
+			isMounted.current = false;
+		};
 	}, []);
 
 	const handleClose = (_event, reason) => {
@@ -44,10 +52,10 @@ const Toast = () => {
 			await saveLikedFormSubmission(formData);
 			setLoading(false);
 		} catch (error) {
-			window.alert('Failed to save the data');
+			window.alert('Failed to save the liked form:', error)
 			setLoading(false);
 		}
-        setOpen(false)
+		setOpen(false);
 	};
 
 	const action = (
@@ -96,7 +104,7 @@ const Toast = () => {
 			onClose={handleClose}
 			message={message()}
 			action={action}
-		/> 
+		/>
 	);
 };
 

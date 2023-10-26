@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from 'react';
-
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import CircularProgress from '@mui/material/CircularProgress';
-import Typography from '@mui/material/Typography';
-import { Stack } from '@mui/material';
+import {
+	Stack,
+	Box,
+	Button,
+	CircularProgress,
+	Typography,
+} from '@mui/material';
 import ReplayIcon from '@mui/icons-material/Replay';
 
 import { fetchLikedFormSubmissions } from './service/mockServer';
-import { ItemCard } from './components/ItemCard';
+import { ItemCard } from './components/ItemCard/ItemCard';
 
 export default function Content() {
 	const [loading, setLoading] = useState(false);
-	const [likedForms, setLikedForms] = useState(null);
+	const [likedForms, setLikedForms] = useState([]);
 
 	const getFormData = async () => {
 		setLoading(true);
@@ -21,7 +22,7 @@ export default function Content() {
 			setLikedForms(likedFormSubmissions.formSubmissions);
 			setLoading(false);
 		} catch (error) {
-			console.log('could not fetch the liked forms');
+			window.alert('Error fetching the liked form:', error)
 			setLoading(false);
 		}
 	};
@@ -30,34 +31,38 @@ export default function Content() {
 		getFormData();
 	}, []);
 
-	console.log(likedForms);
-
 	return (
-		<Box sx={{ marginTop: 3, marginX: 3 }}>
-			<Box sx={{display: 'flex', justifyContent: 'space-between'}}>
-			<Typography variant="h4">Liked Form Submissions</Typography>
-			<Button startIcon={<ReplayIcon />} onClick={()=> getFormData()}>Refresh</Button>
-			</Box>
-			{loading ? (
-				<Box sx={{ display: 'flex', paddingTop: 3, justifyContent: 'center' }}>
-					<CircularProgress />
+		<>
+			<Box sx={{ marginTop: 3, marginX: 3 }}>
+				<Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+					<Typography variant="h4">Liked Form Submissions</Typography>
+					<Button variant='contained' startIcon={<ReplayIcon />} onClick={() => getFormData()}>
+						Refresh
+					</Button>
 				</Box>
-			) : (
-				<Stack sx={{ paddingTop: 3 }} spacing={2}>
-					{!likedForms ? (
-						<Typography
-							variant="body1"
-							sx={{ fontStyle: 'italic', marginTop: 1 }}
-						>
-							No liked submission
-						</Typography>
-					) : (
-						likedForms.map((likedForm, index) => {
-							return <ItemCard key={index} likedForm={likedForm} />;
-						})
-					)}
-				</Stack>
-			)}
-		</Box>
+				{loading ? (
+					<Box
+						sx={{ display: 'flex', paddingTop: 3, justifyContent: 'center' }}
+					>
+						<CircularProgress />
+					</Box>
+				) : (
+					<Stack sx={{ paddingTop: 3, overflowY: 'auto' }} spacing={2}>
+						{likedForms.length === 0 ? (
+							<Typography
+								variant="body1"
+								sx={{ fontStyle: 'italic', marginTop: 1 }}
+							>
+								No liked submission
+							</Typography>
+						) : (
+							likedForms.map((likedForm, index) => {
+								return <ItemCard key={index} likedForm={likedForm} />;
+							})
+						)}
+					</Stack>
+				)}
+			</Box>
+		</>
 	);
 }
