@@ -137,7 +137,6 @@ const Toast = () => {
 			onClose={handleClose}
 			message={message()}
 			action={action}
-			autoHideDuration={msgType !== 'info' ? 3000 : null}
 		/>
 	);
 };
