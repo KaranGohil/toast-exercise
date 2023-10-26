@@ -8,9 +8,9 @@ import {
 	IconButton,
 	Snackbar,
 } from '@mui/material';
-import MuiAlert from '@mui/material/Alert';
 
 import { onMessage, saveLikedFormSubmission } from './service/mockServer';
+import Alert from './components/ItemCard/Alert/Alert';
 
 /*
  We have local state with useeffect here because we want only the toast to rerender
@@ -18,21 +18,17 @@ import { onMessage, saveLikedFormSubmission } from './service/mockServer';
  This toast has a single responsibility of show new submission
  */
 
- const Alert = React.forwardRef(function Alert(props, ref) {
-	return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
-
 const Toast = () => {
 	const [open, setOpen] = useState(false);
 	const [loading, setLoading] = useState(false);
-	const [formData, setFormData] = useState({});
+	const [newFormSubmission, setNewFormSubmission] = useState({});
 	const [msgType, setMsgType] = useState('');
 
 	const isMounted = useRef(true);
 
 	const receiveFormData = (formSubmission) => {
 		if (isMounted.current) {
-			setFormData(formSubmission);
+			setNewFormSubmission(formSubmission);
 			setMsgType('info');
 			setOpen(true);
 		}
@@ -57,7 +53,7 @@ const Toast = () => {
 	const handleLike = async () => {
 		setLoading(true);
 		try {
-			await saveLikedFormSubmission(formData);
+			await saveLikedFormSubmission(newFormSubmission);
 			setMsgType('success');
 			setLoading(false);
 		} catch (error) {
@@ -92,11 +88,11 @@ const Toast = () => {
 
 	const message = () => {
 		if (!msgType) return 'No type was passed';
-		if (!formData.data) return 'No data received';
+		if (!newFormSubmission.data) return 'No data received';
 
 		switch (msgType) {
 			case 'info':
-				const { firstName, lastName, email } = formData.data;
+				const { firstName, lastName, email } = newFormSubmission.data;
 				return (
 					<Typography>
 						{firstName} {lastName}
@@ -125,7 +121,7 @@ const Toast = () => {
 					{message()}
 				</Alert>
 			</Snackbar>
-		)
+		);
 	}
 	return (
 		<Snackbar

@@ -7,19 +7,15 @@ import {
 	Typography,
 	Snackbar,
 } from '@mui/material';
-import MuiAlert from '@mui/material/Alert';
 import ReplayIcon from '@mui/icons-material/Replay';
 
 import { fetchLikedFormSubmissions } from './service/mockServer';
 import { ItemCard } from './components/ItemCard/ItemCard';
-
-const Alert = React.forwardRef(function Alert(props, ref) {
-	return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+import Alert from './components/ItemCard/Alert/Alert';
 
 export default function Content() {
 	const [loading, setLoading] = useState(false);
-	const [likedForms, setLikedForms] = useState([]);
+	const [likedFormSubmissions, setLikedFormSubmissions] = useState([]);
 	const [open, setOpen] = useState(false);
 
 	const handleClose = (_event, reason) => {
@@ -30,11 +26,11 @@ export default function Content() {
 		setOpen(false);
 	};
 
-	const getFormData = async () => {
+	const getAllLikedFormSubmissions = async () => {
 		setLoading(true);
 		try {
-			const likedFormSubmissions = await fetchLikedFormSubmissions();
-			setLikedForms(likedFormSubmissions.formSubmissions);
+			const allLikedFormSubmissions = await fetchLikedFormSubmissions();
+			setLikedFormSubmissions(allLikedFormSubmissions.formSubmissions);
 			setLoading(false);
 		} catch (error) {
 			setOpen(true);
@@ -43,7 +39,7 @@ export default function Content() {
 	};
 
 	useEffect(() => {
-		getFormData();
+		getAllLikedFormSubmissions();
 	}, []);
 
 	return (
@@ -54,7 +50,7 @@ export default function Content() {
 					<Button
 						variant="contained"
 						startIcon={<ReplayIcon />}
-						onClick={() => getFormData()}
+						onClick={() => getAllLikedFormSubmissions()}
 					>
 						Refresh
 					</Button>
@@ -67,7 +63,7 @@ export default function Content() {
 					</Box>
 				) : (
 					<Stack sx={{ paddingTop: 3, overflowY: 'auto' }} spacing={2}>
-						{likedForms.length === 0 ? (
+						{likedFormSubmissions.length === 0 ? (
 							<Typography
 								variant="body1"
 								sx={{ fontStyle: 'italic', marginTop: 1 }}
@@ -75,8 +71,13 @@ export default function Content() {
 								No liked submission
 							</Typography>
 						) : (
-							likedForms.map((likedForm, index) => {
-								return <ItemCard key={index} likedForm={likedForm} />;
+							likedFormSubmissions.map((likedFormSubmission, index) => {
+								return (
+									<ItemCard
+										key={index}
+										likedFormSubmission={likedFormSubmission}
+									/>
+								);
 							})
 						)}
 					</Stack>
@@ -89,7 +90,7 @@ export default function Content() {
 				autoHideDuration={3000}
 			>
 				<Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
-					Failed to reterive liked form submissions
+					Failed to reterive liked form submissions. Please try again!
 				</Alert>
 			</Snackbar>
 		</>
